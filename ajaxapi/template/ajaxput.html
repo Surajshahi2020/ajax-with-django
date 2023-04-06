@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fetch API Put Example</title>
+</head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+<body>
+    <table id="data-table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Edit</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    </table>
+
+    <script>
+    fetch("http://127.0.0.1:8000/get")
+        .then(response => response.json())
+        .then(data => {
+        data.data.forEach((item,ind) => {
+            let row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${item.email}</td>
+                <td>${item.password}</td>
+                <td>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter${item?.id}">Edit</button>
+                        <div class="modal fade" id="exampleModalCenter${item.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Update</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container">
+                                    <div class="col-md-12 my-4 ">
+                                        <div class="card p-3 m-2">
+                                            <label for="id">Id</label>
+                                            <input type="text" id="id" value="${item?.id}" name="id" required>
+                                            <label for="name">name</label>
+                                            <input type="text" id="name" value="${item?.name}" name="name" required>
+                                            <label for="email">email</label>
+                                            <input type="text" id="email" value="${item?.email}" name="email" required>
+                                            <label for="password">password</label>
+                                            <input type="current-password" id="password" value="${item?.password}" name="password" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="saveChangesBtn">Save changes</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </td>
+            `;
+            document.querySelector("#data-table tbody").appendChild(row);
+        });
+        })
+        
+        $(document).ready(function() {
+            $(document).on("click", ".saveChangesBtn", function() {
+                const row = $(this).closest("tr");
+                const id = row.find("#id").val();
+                const name = row.find("#name").val();
+                const email = row.find("#email").val();
+                const password = row.find("#password").val();
+                console.log(id, name, email, password);
+                fetch(`http://127.0.0.1:8000/put/${id}`, {
+                    headers:{},
+                    method:"PUT",
+                    body:JSON.stringify({
+                        "id":id,
+                        "name":name,
+                        "email":email,
+                        "password":password
+                    })
+                },)
+            });
+            });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>    
+</body>
+</html>
